@@ -73,7 +73,7 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
     const matches = [...contentWithIds.matchAll(headingRegex)];
 
     // We need to replace them one by one to inject unique IDs
-    contentWithIds = contentWithIds.replace(headingRegex, (fullMatch, tag, text) => {
+    contentWithIds = contentWithIds.replace(headingRegex, (fullMatch: string, tag: string, text: string) => {
         const id = `heading-${i++}`;
         const level = parseInt(tag[1]);
         const cleanText = text.replace(/<[^>]*>?/gm, ''); // Remove any nested tags in heading

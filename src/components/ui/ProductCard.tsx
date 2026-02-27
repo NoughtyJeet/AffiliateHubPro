@@ -11,8 +11,10 @@ import { Database } from '@/types/database';
 
 type Product = Database['public']['Tables']['products']['Row'];
 
+type ProductCardProduct = Pick<Product, 'id' | 'title' | 'slug' | 'short_description' | 'rating' | 'review_count' | 'affiliate_link' | 'featured_image' | 'price_range' | 'brand' | 'pros'>;
+
 interface ProductCardProps {
-    product: Product;
+    product: ProductCardProduct;
     className?: string;
 }
 

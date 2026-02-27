@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react';
 import {
     Plus, Edit, Trash2, Search, Filter,
     Star, ExternalLink, Eye, EyeOff, Tag,
-    ChevronRight, MoreVertical, X, Check
+    ChevronRight, MoreVertical, X, Check, Package
 } from 'lucide-react';
 import { createClient } from '@/lib/supabase/client';
 import toast from 'react-hot-toast';
@@ -240,8 +240,8 @@ export default function AdminProducts() {
                                             <button
                                                 onClick={() => toggleStatus(p)}
                                                 className={`flex items-center gap-2 px-3 py-1.5 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all ${p.status === 'published'
-                                                        ? 'bg-green-50 text-green-600 border border-green-100 hover:bg-green-100'
-                                                        : 'bg-gray-100 text-gray-400 border border-transparent hover:bg-gray-200'
+                                                    ? 'bg-green-50 text-green-600 border border-green-100 hover:bg-green-100'
+                                                    : 'bg-gray-100 text-gray-400 border border-transparent hover:bg-gray-200'
                                                     }`}
                                             >
                                                 {p.status === 'published' ? <Eye size={12} /> : <EyeOff size={12} />}

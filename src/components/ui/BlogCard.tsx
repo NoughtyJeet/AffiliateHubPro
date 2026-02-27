@@ -7,8 +7,10 @@ import { Database } from '@/types/database';
 
 type BlogPost = Database['public']['Tables']['blog_posts']['Row'];
 
+type BlogCardPost = Pick<BlogPost, 'id' | 'title' | 'slug' | 'excerpt' | 'featured_image' | 'tags' | 'read_time' | 'created_at'>;
+
 interface BlogCardProps {
-    post: BlogPost;
+    post: BlogCardPost;
     featured?: boolean;
     className?: string;
 }
