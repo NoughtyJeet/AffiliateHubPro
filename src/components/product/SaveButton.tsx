@@ -63,13 +63,13 @@ export function SaveButton({ productId, initialIsSaved = false }: SaveButtonProp
     return (
         <button
             onClick={handleSave}
-            className={`px-4 py-3.5 rounded-xl border-2 transition-all flex items-center justify-center cursor-pointer ${isSaved
-                    ? 'border-red-200 bg-red-50 text-red-500'
-                    : 'border-gray-200 text-gray-500 hover:border-orange-200 hover:text-orange-500'
+            className={`px-5 py-4 rounded-2xl border-2 transition-all flex items-center justify-center cursor-pointer shadow-sm hover:shadow-md active:scale-95 ${isSaved
+                    ? 'border-red-200 bg-red-50 text-red-500 dark:border-red-500/20 dark:bg-red-500/10 dark:text-red-400'
+                    : 'border-gray-200 dark:border-zinc-800 text-gray-500 dark:text-zinc-500 hover:border-orange-200 dark:hover:border-orange-500/30 hover:text-orange-500 dark:bg-zinc-900/50'
                 }`}
             title={isSaved ? "Remove from saved" : "Save product"}
         >
-            <Heart className={`w-5 h-5 ${isSaved ? 'fill-red-500' : ''}`} />
+            <Heart className={`w-5 h-5 transition-transform duration-300 ${isSaved ? 'fill-red-500 dark:fill-red-400 scale-110' : 'group-hover:scale-110'}`} />
         </button>
     );
 }

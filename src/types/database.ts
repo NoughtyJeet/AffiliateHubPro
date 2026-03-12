@@ -43,6 +43,8 @@ export type Product = {
     status: 'draft' | 'published';
     price_range: string | null;
     brand: string | null;
+    specifications: Record<string, string> | null;
+    variants: Array<{ name: string; options: string[] }> | null;
     created_at: string;
     updated_at: string;
 };

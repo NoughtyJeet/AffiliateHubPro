@@ -4,10 +4,11 @@ import { useState, useEffect } from 'react';
 import {
     Plus, Edit, Trash2, Search, Filter,
     Star, ExternalLink, Eye, EyeOff, Tag,
-    ChevronRight, MoreVertical, X, Check, Package
+    ChevronRight, MoreVertical, X, Check, Package, Upload
 } from 'lucide-react';
 import { createClient } from '@/lib/supabase/client';
 import toast from 'react-hot-toast';
+import ProductImport from '@/components/admin/products/ProductImport';
 
 type Product = {
     id: string; title: string; slug: string; description: string | null;
@@ -45,6 +46,7 @@ export default function AdminProducts() {
     const [search, setSearch] = useState('');
     const [statusFilter, setStatusFilter] = useState('all');
     const [saving, setSaving] = useState(false);
+    const [showImport, setShowImport] = useState(false);
     const supabase = createClient();
 
     // Array fields helpers
@@ -58,11 +60,29 @@ export default function AdminProducts() {
 
     async function fetchData() {
         setLoading(true);
-        const { data: prods } = await supabase.from('products').select('*').order('created_at', { ascending: false });
-        const { data: cats } = await supabase.from('categories').select('id, name, type').eq('type', 'product');
-        setProducts(prods || []);
-        setCategories(cats || []);
-        setLoading(false);
+        try {
+            const { data: prods, error: pError } = await supabase
+                .from('products')
+                .select('*')
+                .order('created_at', { ascending: false });
+            
+            if (pError) throw pError;
+
+            const { data: cats, error: cError } = await supabase
+                .from('categories')
+                .select('id, name, type')
+                .eq('type', 'product');
+            
+            if (cError) throw cError;
+
+            setProducts(prods || []);
+            setCategories(cats || []);
+        } catch (error: any) {
+            console.error('Error fetching inventory intel:', error);
+            toast.error('Intelligence Link Failed: ' + (error.message || 'Unknown protocol error'));
+        } finally {
+            setLoading(false);
+        }
     }
 
     function openNew() {
@@ -88,6 +108,8 @@ export default function AdminProducts() {
     async function handleSave() {
         if (!form.title?.trim()) { toast.error('Title is required'); return; }
         setSaving(true);
+        console.log('Initiating registry sync for product:', form.title);
+        
         const payload = {
             ...form,
             pros: prosInput.split('\n').filter(l => l.trim()),
@@ -97,13 +119,25 @@ export default function AdminProducts() {
             updated_at: new Date().toISOString(),
         };
 
-        const { error } = editing
-            ? await supabase.from('products').update(payload).eq('id', editing.id)
-            : await supabase.from('products').insert(payload);
+        try {
+            const { error } = editing
+                ? await supabase.from('products').update(payload).eq('id', editing.id)
+                : await supabase.from('products').insert(payload);
 
-        if (error) { toast.error(error.message); }
-        else { toast.success(editing ? 'Product updated!' : 'Product created!'); setShowForm(false); fetchData(); }
-        setSaving(false);
+            if (error) {
+                console.error('Registry sync failed:', error);
+                toast.error(`Protocol Failure: ${error.message} (Code: ${error.code})`);
+            } else {
+                toast.success(editing ? 'Product blueprint updated!' : 'New product authorized!');
+                setShowForm(false);
+                fetchData();
+            }
+        } catch (err: any) {
+            console.error('Fatal error during sync:', err);
+            toast.error('Fatal Sync Error: Check system console.');
+        } finally {
+            setSaving(false);
+        }
     }
 
     async function handleDelete(id: string) {
@@ -122,6 +156,38 @@ export default function AdminProducts() {
         }
     }
 
+    const handleImportUrlData = (data: any) => {
+        setForm(f => ({ ...f, ...data, slug: slugify(data.title) }));
+        setShowForm(true);
+        setShowImport(false);
+    };
+
+    const handleBulkImport = async (data: any[]) => {
+        setSaving(true);
+        const productsToInsert = data.map(item => ({
+            title: item.title || 'Imported Product',
+            slug: slugify(item.title || 'Imported Product') + '-' + Math.random().toString(36).substring(2, 5),
+            brand: item.brand || null,
+            affiliate_link: item.link || item.affiliate_link || null,
+            status: 'draft',
+            rating: 4.5,
+            review_count: 0,
+            pros: [], cons: [], features: [],
+            created_at: new Date().toISOString(),
+        }));
+
+        const { error } = await supabase.from('products').insert(productsToInsert);
+        
+        if (error) {
+            toast.error(`Bulk import failed: ${error.message}`);
+        } else {
+            toast.success(`Successfully registered ${data.length} products!`);
+            fetchData();
+            setShowImport(false);
+        }
+        setSaving(false);
+    };
+
     const filtered = products.filter(p => {
         const matchSearch = p.title.toLowerCase().includes(search.toLowerCase());
         const matchStatus = statusFilter === 'all' || p.status === statusFilter;
@@ -133,51 +199,68 @@ export default function AdminProducts() {
             {/* Dynamic Header */}
             <div className="flex flex-col md:flex-row md:items-end justify-between gap-6">
                 <div>
-                    <p className="text-[10px] font-black text-orange-500 uppercase tracking-[0.3em] mb-2 leading-none">Catalog Management</p>
-                    <h2 className="text-3xl font-black text-gray-900 tracking-tight leading-none">Inventory Database</h2>
-                    <p className="text-gray-400 text-xs font-bold uppercase tracking-widest mt-3">
+                    <p className="text-[10px] font-black text-slate-500 uppercase tracking-[0.3em] mb-2 leading-none">Catalog Management</p>
+                    <h2 className="text-3xl font-black text-slate-900 tracking-tight leading-none">Inventory Database</h2>
+                    <p className="text-slate-400 text-xs font-bold uppercase tracking-widest mt-3">
                         Displaying {filtered.length} of {products.length} Products
                     </p>
                 </div>
-                <button
-                    onClick={openNew}
-                    className="flex items-center gap-3 bg-orange-500 hover:bg-orange-600 text-white px-6 py-3.5 rounded-2xl font-black text-xs uppercase tracking-widest transition-all shadow-lg shadow-orange-500/30 cursor-pointer"
-                >
-                    <Plus className="w-5 h-5" /> Register Product
-                </button>
+                <div className="flex items-center gap-4">
+                    <button
+                        onClick={() => setShowImport(!showImport)}
+                        className={`flex items-center gap-3 px-6 py-3.5 rounded-2xl font-black text-xs uppercase tracking-widest transition-all shadow-lg cursor-pointer ${showImport ? 'bg-slate-100 text-slate-900 border border-slate-200' : 'bg-white text-slate-900 border border-slate-100 shadow-slate-200/50 hover:bg-slate-50'}`}
+                    >
+                        {showImport ? <X className="w-5 h-5" /> : <Upload className="w-5 h-5" />}
+                        {showImport ? 'Close Portal' : 'Mass Registry'}
+                    </button>
+                    <button
+                        onClick={openNew}
+                        className="flex items-center gap-3 bg-slate-800 hover:bg-slate-900 text-white px-6 py-3.5 rounded-2xl font-black text-xs uppercase tracking-widest transition-all shadow-lg shadow-slate-200/50 cursor-pointer"
+                    >
+                        <Plus className="w-5 h-5" /> Register Product
+                    </button>
+                </div>
             </div>
+
+            {/* Import Portal */}
+            {showImport && (
+                <ProductImport 
+                    onImportUrl={handleImportUrlData}
+                    onBulkImport={handleBulkImport}
+                />
+            )}
 
             {/* Futuristic Command Bar */}
             <div className="flex flex-col md:flex-row gap-4">
                 <div className="relative flex-1 group">
-                    <Search className="absolute left-5 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 group-focus-within:text-orange-500 transition-colors" />
+                    <Search className="absolute left-5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400 group-focus-within:text-slate-600 transition-colors" />
                     <input
                         value={search}
                         onChange={e => setSearch(e.target.value)}
                         placeholder="Search inventory by title or slug..."
-                        className="w-full pl-14 pr-6 py-4 rounded-[1.25rem] bg-white border border-gray-100 text-sm font-bold text-gray-900 focus:outline-none focus:ring-4 focus:ring-orange-500/5 focus:border-orange-500 transition-all shadow-sm placeholder:text-gray-300"
+                        className="w-full pl-14 pr-6 py-4 rounded-[1.25rem] bg-white border border-slate-100 text-sm font-bold text-slate-900 focus:outline-none focus:ring-4 focus:ring-slate-500/5 focus:border-slate-500 transition-all shadow-sm placeholder:text-slate-300"
                     />
                 </div>
                 <div className="relative group">
-                    <Filter className="absolute left-5 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 group-focus-within:text-orange-500 transition-colors pointer-events-none" />
+                    <Filter className="absolute left-5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400 group-focus-within:text-slate-600 transition-colors pointer-events-none" />
                     <select
                         value={statusFilter}
                         onChange={e => setStatusFilter(e.target.value)}
-                        className="pl-14 pr-12 py-4 rounded-[1.25rem] bg-white border border-gray-100 text-sm font-black uppercase tracking-widest text-gray-600 focus:outline-none focus:ring-4 focus:ring-orange-500/5 focus:border-orange-500 appearance-none cursor-pointer shadow-sm"
+                        className="pl-14 pr-12 py-4 rounded-[1.25rem] bg-white border border-slate-100 text-sm font-black uppercase tracking-widest text-slate-600 focus:outline-none focus:ring-4 focus:ring-slate-500/5 focus:border-slate-500 appearance-none cursor-pointer shadow-sm"
                     >
                         <option value="all">Level: All Status</option>
                         <option value="published">Status: Live</option>
                         <option value="draft">Status: Draft</option>
                     </select>
-                    <ChevronRight className="absolute right-5 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 rotate-90 pointer-events-none" />
+                    <ChevronRight className="absolute right-5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400 rotate-90 pointer-events-none" />
                 </div>
             </div>
 
             {/* Advanced Data Table */}
-            <div className="bg-white rounded-[2.5rem] border border-gray-100 shadow-sm overflow-hidden min-h-[400px]">
+            <div className="relative bg-white rounded-[2.5rem] border border-slate-100 shadow-sm overflow-hidden min-h-[400px]">
                 {loading ? (
                     <div className="absolute inset-0 flex items-center justify-center bg-white/80 backdrop-blur-sm z-10">
-                        <div className="w-12 h-12 border-4 border-orange-500 border-t-transparent rounded-full animate-spin" />
+                        <div className="w-12 h-12 border-4 border-slate-700 border-t-transparent rounded-full animate-spin" />
                     </div>
                 ) : filtered.length === 0 ? (
                     <div className="flex flex-col items-center justify-center py-32 grayscale opacity-40">
@@ -188,34 +271,34 @@ export default function AdminProducts() {
                     <div className="overflow-x-auto">
                         <table className="w-full border-collapse">
                             <thead>
-                                <tr className="bg-gray-50/50 border-b border-gray-50">
+                                <tr className="bg-slate-50/50 border-b border-slate-50">
                                     {['Product Intelligence', 'Affiliation & Category', 'Metrics', 'Live Status', 'Control Panel'].map(h => (
-                                        <th key={h} className="text-left px-8 py-5 text-[10px] font-black text-gray-400 uppercase tracking-widest">{h}</th>
+                                        <th key={h} className="text-left px-8 py-5 text-[10px] font-black text-slate-400 uppercase tracking-widest">{h}</th>
                                     ))}
                                 </tr>
                             </thead>
-                            <tbody className="divide-y divide-gray-50">
+                            <tbody className="divide-y divide-slate-50">
                                 {filtered.map(p => (
-                                    <tr key={p.id} className="hover:bg-gray-50/30 transition-all group">
+                                    <tr key={p.id} className="hover:bg-slate-50/30 transition-all group">
                                         <td className="px-8 py-5">
                                             <div className="flex items-center gap-4">
-                                                <div className="w-14 h-14 bg-gray-50 rounded-2xl overflow-hidden border border-gray-100 flex-shrink-0 relative group-hover:scale-110 transition-transform">
+                                                <div className="w-14 h-14 bg-slate-50 rounded-2xl overflow-hidden border border-slate-100 flex-shrink-0 relative group-hover:scale-110 transition-transform">
                                                     {p.featured_image ? (
                                                         <img src={p.featured_image} alt="" className="w-full h-full object-cover" />
                                                     ) : (
                                                         <div className="w-full h-full flex items-center justify-center">
-                                                            <Tag size={20} className="text-gray-200" />
+                                                            <Tag size={20} className="text-slate-200" />
                                                         </div>
                                                     )}
                                                     {p.featured && (
-                                                        <div className="absolute top-0 right-0 p-1 bg-orange-500 text-white rounded-bl-lg shadow-sm">
+                                                        <div className="absolute top-0 right-0 p-1 bg-amber-500 text-white rounded-bl-lg shadow-sm">
                                                             <Star size={10} className="fill-white" />
                                                         </div>
                                                     )}
                                                 </div>
                                                 <div className="min-w-0">
-                                                    <p className="font-black text-gray-900 text-sm truncate group-hover:text-orange-600 transition-colors uppercase tracking-tight">{p.title}</p>
-                                                    <p className="text-[10px] text-gray-400 font-bold uppercase tracking-widest truncate">{p.slug}</p>
+                                                    <p className="font-black text-slate-900 text-sm truncate group-hover:text-slate-700 transition-colors uppercase tracking-tight">{p.title}</p>
+                                                    <p className="text-[10px] text-slate-400 font-bold uppercase tracking-widest truncate">{p.slug}</p>
                                                 </div>
                                             </div>
                                         </td>
@@ -281,14 +364,14 @@ export default function AdminProducts() {
                     <div className="bg-white rounded-[2.5rem] shadow-2xl w-full max-w-4xl max-h-[90vh] overflow-hidden flex flex-col relative animate-in zoom-in-95 slide-in-from-bottom-5 duration-300 border-8 border-white">
 
                         {/* Modal Header */}
-                        <div className="flex items-center justify-between p-8 border-b border-gray-50 bg-gray-50/50">
+                        <div className="flex items-center justify-between p-8 border-b border-slate-50 bg-slate-50/50">
                             <div>
-                                <p className="text-[10px] font-black text-orange-500 uppercase tracking-[0.3em] mb-1">System Form</p>
-                                <h2 className="text-2xl font-black text-gray-900 tracking-tighter uppercase leading-none">
+                                <p className="text-[10px] font-black text-slate-500 uppercase tracking-[0.3em] mb-1">System Form</p>
+                                <h2 className="text-2xl font-black text-slate-900 tracking-tighter uppercase leading-none">
                                     {editing ? 'Modify Blueprint' : 'New Product Entry'}
                                 </h2>
                             </div>
-                            <button onClick={() => setShowForm(false)} className="w-10 h-10 flex items-center justify-center bg-white border border-gray-100 rounded-xl text-gray-400 hover:text-gray-900 transition-colors shadow-sm">
+                            <button onClick={() => setShowForm(false)} className="w-10 h-10 flex items-center justify-center bg-white border border-slate-100 rounded-xl text-slate-400 hover:text-slate-900 transition-colors shadow-sm">
                                 <X size={20} />
                             </button>
                         </div>
@@ -297,17 +380,17 @@ export default function AdminProducts() {
                         <div className="flex-1 overflow-y-auto p-10 space-y-10 scrollbar-hide">
                             {/* Basic Meta */}
                             <section>
-                                <h3 className="text-xs font-black text-gray-400 uppercase tracking-widest mb-6 px-1 italic">01. Core Identity</h3>
-                                <div className="grid grid-cols-1 md:grid-cols-2 gap-8 bg-gray-50/50 p-6 rounded-3xl border border-gray-100 shadow-inner">
+                                <h3 className="text-xs font-black text-slate-400 uppercase tracking-widest mb-6 px-1 italic">01. Core Identity</h3>
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-8 bg-slate-50/50 p-6 rounded-3xl border border-slate-100 shadow-inner">
                                     <div className="space-y-2">
-                                        <label className="text-[10px] font-black text-gray-500 uppercase tracking-widest ml-1">Product Title *</label>
+                                        <label className="text-[10px] font-black text-slate-500 uppercase tracking-widest ml-1">Product Title *</label>
                                         <input value={form.title || ''} onChange={e => handleTitleChange(e.target.value)}
-                                            className="w-full px-5 py-3.5 bg-white border border-gray-100 rounded-2xl text-sm font-bold shadow-sm focus:outline-none focus:ring-4 focus:ring-orange-500/5 focus:border-orange-500 transition-all" />
+                                            className="w-full px-5 py-3.5 bg-white border border-slate-100 rounded-2xl text-sm font-bold shadow-sm focus:outline-none focus:ring-4 focus:ring-slate-500/5 focus:border-slate-500 transition-all" />
                                     </div>
                                     <div className="space-y-2">
-                                        <label className="text-[10px] font-black text-gray-500 uppercase tracking-widest ml-1">Permanent Slug</label>
+                                        <label className="text-[10px] font-black text-slate-500 uppercase tracking-widest ml-1">Permanent Slug</label>
                                         <input value={form.slug || ''} onChange={e => setForm(f => ({ ...f, slug: e.target.value }))}
-                                            className="w-full px-5 py-3.5 bg-white border border-gray-100 rounded-2xl text-sm font-bold shadow-sm focus:outline-none focus:ring-4 focus:ring-orange-500/5 focus:border-orange-500 transition-all" />
+                                            className="w-full px-5 py-3.5 bg-white border border-slate-100 rounded-2xl text-sm font-bold shadow-sm focus:outline-none focus:ring-4 focus:ring-slate-500/5 focus:border-slate-500 transition-all" />
                                     </div>
                                 </div>
                             </section>
@@ -400,20 +483,20 @@ export default function AdminProducts() {
                         </div>
 
                         {/* Modal Footer */}
-                        <div className="p-8 border-t border-gray-50 bg-gray-50/50 flex flex-wrap items-center justify-between gap-6">
+                        <div className="p-8 border-t border-slate-50 bg-slate-50/50 flex flex-wrap items-center justify-between gap-6">
                             <div className="flex gap-6">
                                 <label className="flex items-center gap-2.5 cursor-pointer group">
-                                    <div className={`w-6 h-6 rounded-lg border-2 flex items-center justify-center transition-all ${form.featured ? 'bg-orange-500 border-orange-500' : 'border-gray-200 group-hover:border-orange-300'
+                                    <div className={`w-6 h-6 rounded-lg border-2 flex items-center justify-center transition-all ${form.featured ? 'bg-amber-500 border-amber-500' : 'border-slate-200 group-hover:border-amber-300'
                                         }`}>
                                         {form.featured && <Check size={14} className="text-white" />}
                                     </div>
                                     <input type="checkbox" className="hidden" checked={form.featured} onChange={e => setForm(f => ({ ...f, featured: e.target.checked }))} />
-                                    <span className="text-[10px] font-black uppercase tracking-widest text-gray-500">Promote to Featured</span>
+                                    <span className="text-[10px] font-black uppercase tracking-widest text-slate-500">Promote to Featured</span>
                                 </label>
                                 <div className="flex items-center gap-3">
-                                    <span className="text-[10px] font-black uppercase tracking-widest text-gray-400">Security:</span>
+                                    <span className="text-[10px] font-black uppercase tracking-widest text-slate-400">Security:</span>
                                     <select value={form.status || 'draft'} onChange={e => setForm(f => ({ ...f, status: e.target.value as 'draft' | 'published' }))}
-                                        className="px-3 py-1 bg-white border border-gray-200 rounded-lg text-[10px] font-black uppercase tracking-widest text-gray-900 focus:outline-none">
+                                        className="px-3 py-1 bg-white border border-slate-200 rounded-lg text-[10px] font-black uppercase tracking-widest text-slate-900 focus:outline-none">
                                         <option value="draft">Level 0: Draft</option>
                                         <option value="published">Level 1: Live</option>
                                     </select>
@@ -422,14 +505,14 @@ export default function AdminProducts() {
                             <div className="flex gap-3">
                                 <button
                                     onClick={() => setShowForm(false)}
-                                    className="px-6 py-3 rounded-xl text-[10px] font-black uppercase tracking-widest text-gray-400 hover:text-gray-900 transition-all"
+                                    className="px-6 py-3 rounded-xl text-[10px] font-black uppercase tracking-widest text-slate-400 hover:text-slate-900 transition-all"
                                 >
                                     Discard
                                 </button>
                                 <button
                                     onClick={handleSave}
                                     disabled={saving}
-                                    className="px-8 py-3 bg-gray-900 hover:bg-black disabled:bg-gray-400 text-white text-[10px] font-black uppercase tracking-[0.2em] rounded-xl shadow-xl shadow-gray-200 transition-all"
+                                    className="px-8 py-3 bg-slate-800 hover:bg-slate-900 disabled:bg-slate-400 text-white text-[10px] font-black uppercase tracking-[0.2em] rounded-xl shadow-xl shadow-slate-200 transition-all"
                                 >
                                     {saving ? 'SYNCHRONIZING...' : editing ? 'VERIFY & UPDATE' : 'AUTHORIZE ENTRY'}
                                 </button>
