@@ -14,6 +14,22 @@ const inter = Inter({ subsets: ["latin"] });
 export const metadata: Metadata = {
   title: "AffiliateHub Pro - Honest Reviews & Best Deals",
   description: "Your trusted source for honest product reviews and the best Amazon deals.",
+  icons: {
+    icon: "/favicon.png",
+    apple: "/favicon.png",
+  },
+  openGraph: {
+    title: "AffiliateHub Pro - Honest Reviews & Best Deals",
+    description: "Your trusted source for honest product reviews and the best Amazon deals.",
+    images: [
+      {
+        url: "/og-image.png",
+        width: 1200,
+        height: 630,
+        alt: "AffiliateHub Pro - Honest Reviews & Best Deals",
+      },
+    ],
+  },
 };
 
 export default function RootLayout({
