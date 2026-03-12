@@ -132,8 +132,8 @@ export default async function DealsPage() {
                                 <ProductCard
                                     product={{
                                         ...product,
-                                        // Visual tweak for the card to show original vs discount
-                                        price_range: `<span class="text-red-600 font-black">${product.price_range}</span> <span class="text-xs text-gray-400 line-through font-bold ml-1">${product.original_price}</span>`
+                                        sale_price: product.price_range || '',
+                                        original_price: product.original_price
                                     }}
                                 />
                             </div>

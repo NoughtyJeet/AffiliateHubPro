@@ -1,0 +1,76 @@
+
+> temp-next@0.1.0 build
+> next build
+
+ΓÜá turbopack.root should be absolute, using: C:\Users\jparg\Downloads\affiliateHub Pro
+Γû▓ Next.js 16.1.6 (Turbopack)
+- Environments: .env.local
+
+ΓÜá The "middleware" file convention is deprecated. Please use "proxy" instead. Learn more: https://nextjs.org/docs/messages/middleware-to-proxy
+  Creating an optimized production build ...
+Γ£ô Compiled successfully in 9.8s
+  Running TypeScript ...
+  Collecting page data using 7 workers ...
+  Generating static pages using 7 workers (0/33) ...
+ΓÜá metadataBase property in metadata export is not set for resolving social open graph or twitter images, using "http://localhost:3000". See https://nextjs.org/docs/app/api-reference/functions/generate-metadata#metadatabase
+ΓÜá metadataBase property in metadata export is not set for resolving social open graph or twitter images, using "http://localhost:3000". See https://nextjs.org/docs/app/api-reference/functions/generate-metadata#metadatabase
+  Generating static pages using 7 workers (8/33) 
+The width(-1) and height(-1) of chart should be greater than 0,
+       please check the style of container, or the props width(100%) and height(100%),
+       or add a minWidth(0) or minHeight(undefined) or use aspect(undefined) to control the
+       height and width.
+  Generating static pages using 7 workers (16/33) 
+  Generating static pages using 7 workers (24/33) 
+The width(-1) and height(-1) of chart should be greater than 0,
+       please check the style of container, or the props width(100%) and height(100%),
+       or add a minWidth(0) or minHeight(undefined) or use aspect(undefined) to control the
+       height and width.
+The width(-1) and height(-1) of chart should be greater than 0,
+       please check the style of container, or the props width(100%) and height(100%),
+       or add a minWidth(0) or minHeight(undefined) or use aspect(undefined) to control the
+       height and width.
+Γ£ô Generating static pages using 7 workers (33/33) in 875.5ms
+  Finalizing page optimization ...
+
+Route (app)
+Γöî ╞Æ /
+Γö£ Γùï /_not-found
+Γö£ Γùï /about
+Γö£ Γùï /admin
+Γö£ Γùï /admin/ads
+Γö£ Γùï /admin/analytics
+Γö£ Γùï /admin/blog
+Γö£ Γùï /admin/categories
+Γö£ Γùï /admin/logs
+Γö£ Γùï /admin/media
+Γö£ Γùï /admin/products
+Γö£ Γùï /admin/products/import
+Γö£ Γùï /admin/seo
+Γö£ Γùï /admin/settings
+Γö£ ╞Æ /api/admin/product-metadata
+Γö£ ╞Æ /api/chat
+Γö£ ╞Æ /api/clicks
+Γö£ Γùï /auth/forgot-password
+Γö£ Γùï /auth/login
+Γö£ Γùï /auth/signup
+Γö£ ╞Æ /blog
+Γö£ ╞Æ /blog/[slug]
+Γö£ ╞Æ /category/[slug]
+Γö£ Γùï /contact
+Γö£ Γùï /dashboard
+Γö£ ╞Æ /deals
+Γö£ Γùï /disclaimer
+Γö£ Γùï /privacy-policy
+Γö£ ╞Æ /product/[slug]
+Γö£ ╞Æ /product/%5Bslug%5D
+Γö£ ╞Æ /products
+Γö£ ╞Æ /saved
+Γö£ ╞Æ /search
+Γöö Γùï /sitemap
+
+
+╞Æ Proxy (Middleware)
+
+Γùï  (Static)   prerendered as static content
+╞Æ  (Dynamic)  server-rendered on demand
+

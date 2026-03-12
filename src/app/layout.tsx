@@ -12,6 +12,7 @@ import SubscriptionPopup from "@/components/public/SubscriptionPopup";
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
+  metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL || 'https://affiliatehub-pro.vercel.app'),
   title: "AffiliateHub Pro - Honest Reviews & Best Deals",
   description: "Your trusted source for honest product reviews and the best Amazon deals.",
   icons: {

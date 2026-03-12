@@ -37,7 +37,7 @@ export function Footer() {
                                 { Icon: Instagram, href: '#', color: 'hover:text-pink-500' },
                                 { Icon: Youtube, href: '#', color: 'hover:text-red-500' }
                             ].map(({ Icon, href, color }, i) => (
-                                <a key={i} href={href} target="_blank" rel="noopener noreferrer" className={`w-10 h-10 rounded-xl bg-gray-50 dark:bg-zinc-900 border border-gray-100 dark:border-zinc-800 flex items-center justify-center text-gray-400 transition-all ${color} hover:scale-110 active:scale-95`}>
+                                <a key={i} href={href || '#'} target="_blank" rel="noopener noreferrer" className={`w-10 h-10 rounded-xl bg-gray-50 dark:bg-zinc-900 border border-gray-100 dark:border-zinc-800 flex items-center justify-center text-gray-400 transition-all ${color} hover:scale-110 active:scale-95`}>
                                     <Icon className="w-5 h-5" />
                                 </a>
                             ))}

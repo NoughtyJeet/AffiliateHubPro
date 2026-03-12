@@ -12,7 +12,7 @@ export async function GET(req: NextRequest) {
     }
 
     try {
-        const supabase = createClient();
+        const supabase = await createClient();
         
         // Log the click asynchronously (don't block the redirect)
         const userAgent = req.headers.get('user-agent') || '';

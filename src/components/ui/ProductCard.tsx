@@ -15,7 +15,10 @@ type Product = Database['public']['Tables']['products']['Row'];
 type ProductCardProduct = Pick<Product, 'id' | 'title' | 'slug' | 'short_description' | 'rating' | 'review_count' | 'affiliate_link' | 'featured_image' | 'price_range' | 'brand' | 'pros'>;
 
 interface ProductCardProps {
-    product: ProductCardProduct;
+    product: ProductCardProduct & {
+        sale_price?: string;
+        original_price?: string;
+    };
     layout?: 'default' | 'horizontal' | 'compact';
     className?: string;
 }
@@ -137,7 +140,16 @@ export function ProductCard({ product, layout = 'default', className = '' }: Pro
                     <div className="flex items-end justify-between pt-4 border-t border-white/10 mt-auto">
                         <div className="flex flex-col">
                             <span className="text-[8px] uppercase font-black text-gray-500 tracking-widest mb-0.5">Availability</span>
-                            <span className="text-sm font-bold text-white">{product.price_range || 'Check Price'}</span>
+                            <span className="text-sm font-bold text-white">
+                                {product.sale_price ? (
+                                    <>
+                                        <span className="text-orange-400">{product.sale_price}</span>
+                                        {product.original_price && <span className="text-[10px] text-gray-500 line-through ml-1.5 opacity-60">{product.original_price}</span>}
+                                    </>
+                                ) : (
+                                    product.price_range || 'Check Price'
+                                )}
+                            </span>
                         </div>
                         <button
                             onClick={handleAffiliateClick}
