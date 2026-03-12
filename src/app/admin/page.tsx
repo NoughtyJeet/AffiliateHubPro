@@ -7,6 +7,7 @@ import {
     Eye, Star, ArrowUpRight, ArrowRight, Activity, TrendingUp
 } from 'lucide-react';
 import { createClient } from '@/lib/supabase/client';
+import toast from 'react-hot-toast';
 
 interface Stats {
     products: number; publishedProducts: number;
