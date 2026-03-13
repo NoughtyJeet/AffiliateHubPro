@@ -9,8 +9,9 @@ import {
 } from 'lucide-react';
 import { createClient } from '@/lib/supabase/client';
 import toast from 'react-hot-toast';
+import { Category } from '@/types/database';
 
-type Category = {
+type CategoryForm = {
     id: string; name: string; slug: string; description: string | null;
     type: 'product' | 'blog'; meta_title: string | null; meta_description: string | null;
     image_url: string | null; created_at: string;

@@ -76,8 +76,8 @@ export function LeadMagnetCard({ productTitle }: LeadMagnetCardProps) {
                         <div className="w-12 h-12 rounded-full bg-green-500/20 border border-green-500/30 flex items-center justify-center">
                             <CheckCircle className="w-6 h-6 text-green-400" />
                         </div>
-                        <p className="text-sm font-black text-white">You're in! 🎉</p>
-                        <p className="text-xs text-zinc-400">We'll alert you when the price drops.</p>
+                        <p className="text-sm font-black text-white">You&apos;re in! 🎉</p>
+                        <p className="text-xs text-zinc-400">We&apos;ll alert you when the price drops.</p>
                     </div>
                 ) : (
                     <form onSubmit={handleSubmit} className="flex flex-col gap-2.5">

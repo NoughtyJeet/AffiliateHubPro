@@ -24,7 +24,7 @@ export default function ContactPage() {
             <div className="bg-gray-50 border-b border-gray-100 py-20">
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
                     <h1 className="text-4xl md:text-5xl font-black text-gray-900 tracking-tighter uppercase italic leading-none mb-6">Connect With The <span className="text-orange-500 underline decoration-8 underline-offset-4">Experts</span></h1>
-                    <p className="max-w-xl mx-auto text-gray-500 font-medium text-lg">Have a product you want us to review? Or just a question about your next purchase? We're here to help.</p>
+                    <p className="max-w-xl mx-auto text-gray-500 font-medium text-lg">Have a product you want us to review? Or just a question about your next purchase? We&apos;re here to help.</p>
                 </div>
             </div>
 

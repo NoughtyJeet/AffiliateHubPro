@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import Image from 'next/image';
 import { createClient } from '@/lib/supabase/client';
 import { Database } from '@/types/database';
 
@@ -46,8 +47,14 @@ export function AdBanner({ placement, className = '' }: AdBannerProps) {
             {ad.ad_type === 'custom_html' || ad.ad_type === 'adsense' || ad.ad_type === 'script' ? (
                 <div dangerouslySetInnerHTML={{ __html: ad.ad_code || '' }} />
             ) : ad.ad_type === 'image' || ad.ad_type === 'affiliate_banner' ? (
-                <a href={ad.link_url || '#'} target="_blank" rel="noopener noreferrer sponsored">
-                    <img src={ad.image_url || ''} alt="Advertisement" width={ad.width} height={ad.height} loading="lazy" className="max-w-full h-auto" />
+                <a href={ad.link_url || '#'} target="_blank" rel="noopener noreferrer sponsored" className="block relative" style={{ width: ad.width, height: ad.height }}>
+                    <Image 
+                        src={ad.image_url || ''} 
+                        alt="Advertisement" 
+                        width={ad.width} 
+                        height={ad.height} 
+                        className="max-w-full h-auto object-contain"
+                    />
                 </a>
             ) : null}
             <span className="sr-only">Advertisement</span>

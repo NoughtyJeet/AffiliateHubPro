@@ -1,0 +1,10 @@
+node_modules/
+.next/
+_old_vite/
+dist/
+build/
+*.log
+ts_errors.txt
+lint_errors.txt
+final_final_build_log.txt
+debug_products.js

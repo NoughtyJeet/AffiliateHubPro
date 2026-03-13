@@ -8,6 +8,7 @@ import {
 } from 'lucide-react';
 import { createClient } from '@/lib/supabase/client';
 import toast from 'react-hot-toast';
+import Image from 'next/image';
 import ProductImport from '@/components/admin/products/ProductImport';
 
 type Product = {
@@ -77,9 +78,10 @@ export default function AdminProducts() {
 
             setProducts(prods || []);
             setCategories(cats || []);
-        } catch (error: any) {
+        } catch (error: unknown) {
+            const message = error instanceof Error ? error.message : 'Unknown protocol error';
             console.error('Error fetching inventory intel:', error);
-            toast.error('Intelligence Link Failed: ' + (error.message || 'Unknown protocol error'));
+            toast.error('Intelligence Link Failed: ' + (message || 'Unknown protocol error'));
         } finally {
             setLoading(false);
         }
@@ -282,9 +284,9 @@ export default function AdminProducts() {
                                     <tr key={p.id} className="hover:bg-slate-50/30 transition-all group">
                                         <td className="px-8 py-5">
                                             <div className="flex items-center gap-4">
-                                                <div className="w-14 h-14 bg-slate-50 rounded-2xl overflow-hidden border border-slate-100 flex-shrink-0 relative group-hover:scale-110 transition-transform">
+                                                <div className="w-16 h-16 bg-slate-50 rounded-2xl overflow-hidden border border-slate-100 flex-shrink-0 relative group-hover:scale-105 transition-transform">
                                                     {p.featured_image ? (
-                                                        <img src={p.featured_image} alt="" className="w-full h-full object-cover" />
+                                                        <Image src={p.featured_image} alt="" fill className="object-cover" />
                                                     ) : (
                                                         <div className="w-full h-full flex items-center justify-center">
                                                             <Tag size={20} className="text-slate-200" />

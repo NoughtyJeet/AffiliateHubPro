@@ -21,7 +21,7 @@ export default function DisclaimerPage() {
                 <div className="bg-white rounded-[2.5rem] shadow-2xl border border-gray-100 p-10 lg:p-16">
                     <div className="prose prose-orange max-w-none space-y-8 font-medium text-gray-600">
                         <section className="bg-gray-50 p-8 rounded-3xl border border-gray-100 italic">
-                            "In compliance with the FTC guidelines, please assume that any and all links on this website are affiliate links, and AffiliateHub may receive a small commission from sales of certain items."
+                            &quot;In compliance with the FTC guidelines, please assume that any and all links on this website are affiliate links, and AffiliateHub may receive a small commission from sales of certain items.&quot;
                         </section>
 
                         <div className="space-y-4">

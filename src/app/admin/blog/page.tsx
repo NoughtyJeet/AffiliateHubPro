@@ -9,6 +9,8 @@ import {
 import { createClient } from '@/lib/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
 import toast from 'react-hot-toast';
+import Image from 'next/image';
+import { BlogPost } from '@/types/database';
 
 type Post = {
     id: string; title: string; slug: string; content: string | null;
@@ -75,10 +77,10 @@ export default function AdminBlog() {
         setEditing(null); setForm(emptyPost()); setFaqItems([]); setTagsInput(''); setShowForm(true);
     }
 
-    function openEdit(post: Post) {
-        setEditing(post); setForm({ ...post });
-        setFaqItems(post.faq_schema || []);
-        setTagsInput((post.tags || []).join(', '));
+    function openEdit(p: BlogPost) {
+        setEditing(p); setForm({ ...p });
+        setFaqItems(p.faq_schema || []);
+        setTagsInput((p.tags || []).join(', '));
         setShowForm(true);
     }
 
@@ -214,7 +216,7 @@ export default function AdminBlog() {
                                             <div className="flex items-center gap-5">
                                                 <div className="w-16 h-16 bg-slate-50 rounded-2xl overflow-hidden border border-slate-100 flex-shrink-0 relative group-hover:scale-105 transition-transform">
                                                     {p.featured_image ? (
-                                                        <img src={p.featured_image} alt="" className="w-full h-full object-cover" />
+                                                        <Image src={p.featured_image} alt="" fill className="object-cover" />
                                                     ) : (
                                                         <div className="w-full h-full flex items-center justify-center">
                                                             <FileText size={24} className="text-slate-200" />

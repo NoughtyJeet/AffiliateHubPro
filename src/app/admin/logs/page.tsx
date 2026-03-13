@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { 
     Terminal, Search, Filter, Trash2, 
     Shield, Activity, User, Clock,
@@ -9,17 +9,7 @@ import {
 import { createClient } from '@/lib/supabase/client';
 import toast from 'react-hot-toast';
 
-type AuditLog = {
-    id: string;
-    action: string;
-    entity_type: string;
-    entity_id: string;
-    admin_id: string;
-    details: any;
-    severity: 'info' | 'warning' | 'critical';
-    ip_address: string;
-    created_at: string;
-};
+import { AuditLog } from '@/types/database';
 
 export default function AdminLogs() {
     const [logs, setLogs] = useState<AuditLog[]>([]);
@@ -28,11 +18,8 @@ export default function AdminLogs() {
     const [severityFilter, setSeverityFilter] = useState('all');
     const supabase = createClient();
 
-    useEffect(() => {
-        fetchLogs();
-    }, []);
-
-    async function fetchLogs() {
+    const fetchLogs = useCallback(async () => {
+        await Promise.resolve();
         setLoading(true);
         const { data, error } = await supabase
             .from('admin_audit_logs')
@@ -42,13 +29,19 @@ export default function AdminLogs() {
 
         if (error) {
             console.error('Error fetching logs:', error);
-            // Fallback for demo if table doesn't exist yet
             setLogs([]);
         } else {
             setLogs(data || []);
         }
         setLoading(false);
-    }
+    }, [supabase]);
+
+    useEffect(() => {
+        const init = async () => {
+            await fetchLogs();
+        };
+        init();
+    }, [fetchLogs]);
 
     async function clearLogs() {
         if (!confirm('SECURITY ALERT: This will permanently erase all system audit logs. Proceed with caution.')) return;

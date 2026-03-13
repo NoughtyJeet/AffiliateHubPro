@@ -2,9 +2,8 @@
 
 import { useState } from 'react';
 import { 
-    Settings, Globe, Shield, CreditCard, Mail, 
-    Image as ImageIcon, Save, Check, AlertCircle, 
-    Lock, Share2, Palette
+    Lock, Share2, Palette, RefreshCw, Save,
+    ImageIcon, AlertCircle, Globe, Shield, Mail
 } from 'lucide-react';
 import toast from 'react-hot-toast';
 
@@ -14,10 +13,16 @@ export default function SettingsPage() {
 
     const handleSave = () => {
         setSaving(true);
-        setTimeout(() => {
-            setSaving(false);
-            toast.success('Site settings synchronized!');
-        }, 1500);
+        try {
+            setTimeout(() => {
+                setSaving(false);
+                toast.success('Site settings synchronized!');
+            }, 1500);
+        } catch (error: unknown) {
+            const message = error instanceof Error ? error.message : 'Unknown protocol error';
+            console.error('Settings sync failure:', error);
+            toast.error('Configuration Blocked: ' + (message || 'Unknown error'));
+        }
     };
 
     const tabs = [
@@ -154,24 +159,3 @@ export default function SettingsPage() {
     );
 }
 
-function RefreshCw(props: any) {
-  return (
-    <svg
-      {...props}
-      xmlns="http://www.w3.org/2000/svg"
-      width="24"
-      height="24"
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="2"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-    >
-      <path d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8" />
-      <path d="M21 3v5h-5" />
-      <path d="M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16" />
-      <path d="M8 16H3v5" />
-    </svg>
-  )
-}

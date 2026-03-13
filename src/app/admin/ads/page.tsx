@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import {
     Plus, Edit, Trash2, Megaphone, Monitor,
     Smartphone, ToggleLeft, ToggleRight, X,
@@ -8,6 +8,7 @@ import {
 } from 'lucide-react';
 import { createClient } from '@/lib/supabase/client';
 import toast from 'react-hot-toast';
+import Image from 'next/image';
 
 type Ad = {
     id: string; ad_name: string; ad_type: 'adsense' | 'custom_html' | 'image' | 'script' | 'affiliate_banner';
@@ -44,17 +45,27 @@ export default function AdminAds() {
     const [saving, setSaving] = useState(false);
     const supabase = createClient();
 
-    useEffect(() => { fetchData(); }, []);
-
-    async function fetchData() {
+    const fetchData = useCallback(async () => {
+        await Promise.resolve();
         setLoading(true);
         const { data } = await supabase.from('ads').select('*').order('created_at', { ascending: false });
-        setAds(data || []);
-        setLoading(false);
-    }
+        Promise.resolve().then(() => {
+            setAds(data || []);
+            setLoading(false);
+        });
+    }, [supabase]);
+
+    useEffect(() => {
+        const init = async () => {
+            await Promise.resolve();
+            fetchData();
+        };
+        init();
+    }, [fetchData]);
 
     function openNew() { setEditing(null); setForm(empty()); setShowForm(true); }
-    function openEdit(a: Ad) { setEditing(a); setForm({ ...a }); setShowForm(true); }
+    function openEdit(p: Ad) {
+ setEditing(p); setForm({ ...p }); setShowForm(true); }
 
     async function handleSave() {
         if (!form.ad_name?.trim()) { toast.error('Ad Campaign Name Required'); return; }

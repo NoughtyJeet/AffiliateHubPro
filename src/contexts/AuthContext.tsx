@@ -1,7 +1,7 @@
 'use client';
 
 import { createContext, useContext, useEffect, useState, ReactNode } from 'react';
-import { User, Session } from '@supabase/supabase-js';
+import { User, Session, AuthError } from '@supabase/supabase-js';
 import { createClient } from '@/lib/supabase/client';
 import { Database } from '@/types/database';
 
@@ -13,11 +13,11 @@ interface AuthContextType {
     profile: Profile | null;
     isAdmin: boolean;
     isLoading: boolean;
-    signUp: (email: string, password: string) => Promise<{ error: any | null }>;
-    signIn: (email: string, password: string) => Promise<{ error: any | null }>;
+    signUp: (email: string, password: string) => Promise<{ error: AuthError | Error | null }>;
+    signIn: (email: string, password: string) => Promise<{ error: AuthError | Error | null }>;
     signOut: () => Promise<void>;
-    resetPassword: (email: string) => Promise<{ error: any | null }>;
-    updateProfile: (updates: Partial<Profile>) => Promise<{ error: any | null }>;
+    resetPassword: (email: string) => Promise<{ error: AuthError | Error | null }>;
+    updateProfile: (updates: Partial<Profile>) => Promise<{ error: AuthError | Error | null }>;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -58,7 +58,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         });
 
         return () => subscription.unsubscribe();
-    }, []);
+    }, [supabase]);
 
     const signUp = async (email: string, password: string) => {
         const { error } = await supabase.auth.signUp({

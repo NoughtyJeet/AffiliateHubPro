@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import {
     Save, RefreshCw, Search, BarChart2,
     Globe, FileCode, MapPin, CheckCircle,
@@ -34,34 +34,51 @@ export default function AdminSEO() {
     const [sitemapGenerating, setSitemapGenerating] = useState(false);
     const supabase = createClient();
 
-    useEffect(() => { fetchSettings(); }, []);
-
-    async function fetchSettings() {
+    const fetchSettings = useCallback(async () => {
         setLoading(true);
-        const { data } = await supabase.from('seo_settings').select('*').single();
-        if (data) setSettings(data);
-        else setSettings({
-            robots_txt: DEFAULT_ROBOTS,
-            search_console_enabled: false,
-            ga_enabled: false,
-            ga_affiliate_tracking: true,
-            site_title: 'Flow Pro | Affiliate Hub',
-            site_tagline: 'Premium Tools Discovery'
-        });
+        try {
+            const { data } = await supabase.from('seo_settings').select('*').single();
+            if (data) setSettings(data);
+            else setSettings({
+                robots_txt: DEFAULT_ROBOTS,
+                search_console_enabled: false,
+                ga_enabled: false,
+                ga_affiliate_tracking: true,
+                site_title: 'Flow Pro | Affiliate Hub',
+                site_tagline: 'Premium Tools Discovery'
+            });
+        } catch (error: unknown) {
+            const message = error instanceof Error ? error.message : 'Unknown protocol error';
+            console.error('Settings sync failure:', error);
+            toast.error('Configuration Blocked: ' + (message || 'Unknown error'));
+        }
         setLoading(false);
-    }
+    }, [supabase]);
+
+    useEffect(() => {
+        const init = async () => {
+            await fetchSettings();
+        };
+        init();
+    }, [fetchSettings]);
 
     async function handleSave() {
         setSaving(true);
         const payload = { ...settings, updated_at: new Date().toISOString() };
-        delete (payload as any).id; // Remove id from payload for upsert if using single() logic or use specific update
+        delete (payload as { id?: string }).id; // Remove id from payload for upsert if using single() logic or use specific update
 
-        const { error } = settings.id
-            ? await supabase.from('seo_settings').update(payload).eq('id', settings.id)
-            : await supabase.from('seo_settings').insert(payload);
+        try {
+            const { error } = settings.id
+                ? await supabase.from('seo_settings').update(payload).eq('id', settings.id)
+                : await supabase.from('seo_settings').insert(payload);
 
-        if (error) { toast.error(error.message); }
-        else { toast.success('SEO System Manifest Updated'); fetchSettings(); }
+            if (error) { toast.error(error.message); }
+            else { toast.success('SEO System Manifest Updated'); fetchSettings(); }
+        } catch (error: unknown) {
+            const message = error instanceof Error ? error.message : 'Unknown protocol error';
+            console.error('SEO settings sync failed:', message);
+            toast.error('Search Engine Link Failure: ' + (message || 'Unknown error'));
+        }
         setSaving(false);
     }
 
@@ -103,7 +120,14 @@ export default function AdminSEO() {
                     </p>
                 </div>
                 <button
-                    onClick={handleSave}
+                    onClick={async () => {
+                        try {
+                            await handleSave();
+                        } catch (err: unknown) {
+                            const message = err instanceof Error ? err.message : 'Unknown protocol error';
+                            toast.error(message);
+                        }
+                    }}
                     disabled={saving}
                     className="flex items-center gap-3 bg-gray-900 hover:bg-black text-white px-8 py-4 rounded-2xl font-black text-xs uppercase tracking-[0.2em] transition-all shadow-xl shadow-gray-200 cursor-pointer disabled:bg-gray-400"
                 >
@@ -266,7 +290,7 @@ export default function AdminSEO() {
                                 <label className="flex items-center justify-between group cursor-pointer">
                                     <div>
                                         <p className="text-sm font-black text-gray-900 uppercase tracking-tight mb-0.5">Affiliate Signal Interception</p>
-                                        <p className="text-[10px] text-gray-400 font-bold uppercase tracking-widest">Track all "Buy on Amazon" actions automatically</p>
+                                        <p className="text-[10px] text-gray-400 font-bold uppercase tracking-widest">Track all &quot;Buy on Amazon&quot; actions automatically</p>
                                     </div>
                                     <button
                                         onClick={() => set('ga_affiliate_tracking', !settings.ga_affiliate_tracking)}

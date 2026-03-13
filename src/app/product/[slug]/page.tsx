@@ -10,6 +10,7 @@ import { BuyButton } from '@/components/product/BuyButton';
 import { SaveButton } from '@/components/product/SaveButton';
 import { LeadMagnetCard } from '@/components/product/LeadMagnetCard';
 import { BlogSection } from '@/components/product/BlogSection';
+import Image from 'next/image';
 
 interface ProductPageProps {
     params: Promise<{
@@ -146,12 +147,12 @@ export default async function ProductPage({ params }: ProductPageProps) {
                                         >
                                             {/* Thumbnail */}
                                             {p.featured_image ? (
-                                                <div className="w-16 h-16 rounded-xl overflow-hidden flex-shrink-0 bg-white dark:bg-zinc-800 border border-gray-100 dark:border-zinc-700">
-                                                    {/* eslint-disable-next-line @next/next/no-img-element */}
-                                                    <img
+                                                <div className="w-16 h-16 rounded-xl overflow-hidden flex-shrink-0 bg-white dark:bg-zinc-800 border border-gray-100 dark:border-zinc-700 relative">
+                                                    <Image
                                                         src={p.featured_image}
                                                         alt={p.title}
-                                                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                                                        fill
+                                                        className="object-cover group-hover:scale-105 transition-transform duration-300"
                                                     />
                                                 </div>
                                             ) : (

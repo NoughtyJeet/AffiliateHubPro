@@ -41,10 +41,10 @@ export default async function DealsPage() {
                             <Zap className="w-3 h-3 fill-white" /> Limited Time Event
                         </div>
                         <h1 className="text-4xl md:text-5xl lg:text-6xl font-black leading-tight mb-6">
-                            Today's Top <span className="text-orange-200 underline decoration-wavy underline-offset-8">Flash Deals</span>
+                            Today&apos;s Top <span className="text-orange-200 underline decoration-wavy underline-offset-8">Flash Deals</span>
                         </h1>
                         <p className="text-lg text-orange-50 font-medium mb-8 max-w-xl">
-                            We've analyzed thousands of listings to find the deepest discounts on high-rated products. Prices are updated hourly. Don't miss out!
+                            We&apos;ve analyzed thousands of listings to find the deepest discounts on high-rated products. Prices are updated hourly. Don&apos;t miss out!
                         </p>
 
                         {/* Countdown Timer (Static Demo) */}
@@ -110,7 +110,7 @@ export default async function DealsPage() {
                 <div className="flex items-center justify-between mb-10">
                     <div>
                         <h2 className="text-3xl font-black text-gray-900 tracking-tight uppercase italic">Featured Discounts</h2>
-                        <p className="text-gray-500 font-medium mt-2">Our editor's top picks for maximum value today.</p>
+                        <p className="text-gray-500 font-medium mt-2">Our editor&apos;s top picks for maximum value today.</p>
                     </div>
                     <AdBanner placement="deals_top" className="hidden md:block max-w-sm" />
                 </div>
@@ -118,7 +118,7 @@ export default async function DealsPage() {
                 {!dealsWithPrices.length ? (
                     <div className="text-center py-20 bg-gray-50 rounded-[3rem] border border-dashed border-gray-200">
                         <div className="text-4xl mb-4">🏷️</div>
-                        <h3 className="text-xl font-bold text-gray-900 mb-2">Refining Today's Deals...</h3>
+                        <h3 className="text-xl font-bold text-gray-900 mb-2">Today&apos;s Deals...</h3>
                         <p className="text-gray-500">We are currently scanning for the best prices. Check back in a few minutes!</p>
                     </div>
                 ) : (
@@ -148,7 +148,7 @@ export default async function DealsPage() {
                         <div className="relative z-10 flex flex-col items-center text-center max-w-2xl mx-auto">
                             <h2 className="text-4xl font-black mb-6 tracking-tighter uppercase leading-none italic text-orange-400">Never Miss A Saving</h2>
                             <p className="text-gray-400 font-medium mb-10 leading-relaxed text-lg">
-                                Join 50,000+ shoppers who receive our daily "Deal Drop" newsletter. We scan Amazon 24/7 so you don't have to.
+                                Join 50,000+ shoppers who receive our daily &quot;Deal Drop&quot; newsletter. We scan Amazon 24/7 so you don&apos;t have to.
                             </p>
                             <form className="w-full flex flex-col sm:flex-row gap-4">
                                 <input

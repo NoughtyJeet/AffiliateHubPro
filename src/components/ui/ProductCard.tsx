@@ -120,7 +120,7 @@ export function ProductCard({ product, layout = 'default', className = '' }: Pro
                     {/* Short Description */}
                     {product.short_description && (
                         <p className="text-xs text-gray-400 line-clamp-1 mb-4 italic opacity-80">
-                            "{product.short_description}"
+                            &quot;{product.short_description}&quot;
                         </p>
                     )}
 
@@ -328,7 +328,7 @@ export function ProductCard({ product, layout = 'default', className = '' }: Pro
 
                 {product.short_description && (
                     <p className="text-sm text-gray-500 dark:text-zinc-400 line-clamp-2 mb-4 font-medium leading-relaxed italic opacity-80">
-                        "{product.short_description}"
+                        &quot;{product.short_description}&quot;
                     </p>
                 )}
 

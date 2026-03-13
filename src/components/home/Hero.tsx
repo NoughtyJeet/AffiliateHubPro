@@ -14,7 +14,7 @@ export function Hero() {
                         Find The <span className="text-transparent bg-clip-text bg-gradient-to-r from-orange-500 to-amber-500 dark:from-orange-400 dark:to-amber-300">Best Products</span> Worth Your Money
                     </h1>
                     <p className="text-lg md:text-xl text-gray-600 dark:text-gray-400 mb-10 max-w-2xl font-medium leading-relaxed">
-                        Expert reviews, in-depth comparisons, and honest recommendations for Amazon's best products. We test so you don't have to.
+                        Expert reviews, in-depth comparisons, and honest recommendations for Amazon&apos;s best products. We test so you don&apos;t have to.
                     </p>
                     <div className="flex flex-col sm:flex-row gap-5">
                         <Link href="/products" className="flex items-center justify-center gap-2 px-8 py-4 bg-orange-500 hover:bg-orange-400 text-white font-black uppercase tracking-widest text-sm rounded-2xl transition-all duration-300 hover:shadow-2xl hover:shadow-orange-500/40 active:scale-95">

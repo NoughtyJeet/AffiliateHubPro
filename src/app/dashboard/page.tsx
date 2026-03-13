@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import { User, Heart, Settings, Trash2, LogOut } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
 import { createClient } from '@/lib/supabase/client';
@@ -26,6 +27,7 @@ export default function UserDashboardPage() {
     const [displayName, setDisplayName] = useState(profile?.display_name || '');
     const [saving, setSaving] = useState(false);
     const [deleteConfirm, setDeleteConfirm] = useState(false);
+    const router = useRouter();
     const supabase = createClient();
 
     useEffect(() => {
@@ -53,7 +55,9 @@ export default function UserDashboardPage() {
     }, [user]);
 
     useEffect(() => {
-        setDisplayName(profile?.display_name || '');
+        if (profile?.display_name) {
+            Promise.resolve().then(() => setDisplayName(profile.display_name || ''));
+        }
     }, [profile]);
 
     if (!user) return null;
@@ -71,8 +75,18 @@ export default function UserDashboardPage() {
 
     const handleDeleteAccount = async () => {
         if (deleteConfirm) {
-            const { error } = await supabase.auth.signOut();
-            if (!error) window.location.href = '/';
+            try {
+                const { error } = await supabase.auth.signOut();
+                if (!error) {
+                    router.push('/');
+                    router.refresh();
+                } else {
+                    toast.error(error.message || 'Failed to sign out after account deletion attempt.');
+                }
+            } catch (err: unknown) {
+                const message = err instanceof Error ? err.message : 'Unknown protocol error during sign out';
+                toast.error(message);
+            }
         }
         setDeleteConfirm(true);
     };

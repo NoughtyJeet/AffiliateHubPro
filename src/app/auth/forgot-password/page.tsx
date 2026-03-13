@@ -51,7 +51,7 @@ export default function ForgotPasswordPage() {
                                 <Mail className="w-6 h-6 text-orange-600" />
                             </div>
                             <h1 className="text-2xl font-bold text-gray-900 mb-1">Reset password</h1>
-                            <p className="text-gray-500 text-sm mb-6">Enter your email and we'll send you a reset link.</p>
+                            <p className="text-gray-500 text-sm mb-6">Enter your email and we&apos;ll send you a reset link.</p>
                             {error && <div className="mb-4 p-3 bg-red-50 border border-red-100 rounded-lg text-red-700 text-sm">{error}</div>}
                             <form onSubmit={handleSubmit} className="space-y-4">
                                 <div>

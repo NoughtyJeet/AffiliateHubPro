@@ -37,7 +37,7 @@ export default async function SearchPage({
                         <div>
                             <p className="text-[10px] font-black text-orange-500 uppercase tracking-[0.3em] mb-2 leading-none">Query Diagnostics</p>
                             <h1 className="text-3xl font-black text-gray-900 tracking-tighter uppercase italic leading-none">
-                                Results for: <span className="text-gray-500">"{q || 'All Products'}"</span>
+                                Results for: <span className="text-gray-500">&quot;{q || 'All Products'}&quot;</span>
                             </h1>
                         </div>
                         <div className="flex items-center gap-4">
@@ -60,7 +60,7 @@ export default async function SearchPage({
                     <div className="flex flex-col items-center justify-center py-32 text-center">
                         <PackageSearch size={64} className="mb-6 text-gray-200" />
                         <h2 className="text-2xl font-black text-gray-900 uppercase tracking-tight mb-2 italic">Zero Matches Found</h2>
-                        <p className="text-gray-500 font-medium max-w-sm mx-auto">Our database doesn't have a record matching that specific query. Try a more generic term.</p>
+                        <p className="text-gray-500 font-medium max-w-sm mx-auto">Our database doesn&apos;t have a record matching that specific query. Try a more generic term.</p>
                         <div className="mt-10 p-8 bg-orange-50 rounded-3xl border border-orange-100 inline-block">
                             <p className="text-xs font-black text-orange-800 uppercase tracking-widest mb-4">Try these popular clusters:</p>
                             <div className="flex flex-wrap justify-center gap-2">

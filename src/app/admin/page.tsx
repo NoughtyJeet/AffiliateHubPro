@@ -8,6 +8,8 @@ import {
 } from 'lucide-react';
 import { createClient } from '@/lib/supabase/client';
 import toast from 'react-hot-toast';
+import { Product, BlogPost } from '@/types/database';
+import { useCallback } from 'react';
 
 interface Stats {
     products: number; publishedProducts: number;
@@ -54,44 +56,49 @@ export default function AdminDashboard() {
         categories: 0, ads: 0,
         totalClicks: 1240 // Mocking for now
     });
-    const [recentProducts, setRecentProducts] = useState<any[]>([]);
-    const [recentPosts, setRecentPosts] = useState<any[]>([]);
+    const [recentProducts, setRecentProducts] = useState<Product[]>([]);
+    const [recentPosts, setRecentPosts] = useState<BlogPost[]>([]);
     const [loading, setLoading] = useState(true);
     const supabase = createClient();
 
+    const fetchStats = useCallback(async () => {
+        setLoading(true);
+        try {
+            const [prod, pubProd, posts, pubPosts, cats, ads, recProd, recPosts] = await Promise.all([
+                supabase.from('products').select('id', { count: 'exact', head: true }),
+                supabase.from('products').select('id', { count: 'exact', head: true }).eq('status', 'published'),
+                supabase.from('blog_posts').select('id', { count: 'exact', head: true }),
+                supabase.from('blog_posts').select('id', { count: 'exact', head: true }).eq('status', 'published'),
+                supabase.from('categories').select('id', { count: 'exact', head: true }),
+                supabase.from('ads').select('id', { count: 'exact', head: true }),
+                supabase.from('products').select('id,title,slug,status,rating,created_at').order('created_at', { ascending: false }).limit(5),
+                supabase.from('blog_posts').select('id,title,slug,status,views,created_at').order('created_at', { ascending: false }).limit(5),
+            ]);
+
+            setStats({
+                products: prod.count || 0, publishedProducts: pubProd.count || 0,
+                posts: posts.count || 0, publishedPosts: pubPosts.count || 0,
+                categories: cats.count || 0, ads: ads.count || 0,
+                totalClicks: 1240 
+            });
+            setRecentProducts(recProd.data as unknown as Product[] || []);
+            setRecentPosts(recPosts.data as unknown as BlogPost[] || []);
+        } catch (error: unknown) {
+            const message = error instanceof Error ? error.message : 'Unknown protocol error';
+            console.error('Dashboard intelligence sync failed:', error);
+            toast.error('Command Center Link Failure: ' + (message || 'Unknown error'));
+        } finally {
+            setLoading(false);
+        }
+    }, [supabase]);
+
     useEffect(() => {
-        const fetchStats = async () => {
-            setLoading(true);
-            try {
-                const [prod, pubProd, posts, pubPosts, cats, ads, recProd, recPosts] = await Promise.all([
-                    supabase.from('products').select('id, status', { count: 'exact', head: true }),
-                    supabase.from('products').select('id', { count: 'exact', head: true }).eq('status', 'published'),
-                    supabase.from('blog_posts').select('id, status', { count: 'exact', head: true }),
-                    supabase.from('blog_posts').select('id', { count: 'exact', head: true }).eq('status', 'published'),
-                    supabase.from('categories').select('id', { count: 'exact', head: true }),
-                    supabase.from('ads').select('id', { count: 'exact', head: true }),
-                    supabase.from('products').select('id,title,slug,status,rating,created_at').order('created_at', { ascending: false }).limit(5),
-                    supabase.from('blog_posts').select('id,title,slug,status,views,created_at').order('created_at', { ascending: false }).limit(5),
-                ]);
-
-                setStats({
-                    products: prod.count || 0, publishedProducts: pubProd.count || 0,
-                    posts: posts.count || 0, publishedPosts: pubPosts.count || 0,
-                    categories: cats.count || 0, ads: ads.count || 0,
-                    totalClicks: 1240 
-                });
-                setRecentProducts(recProd.data || []);
-                setRecentPosts(recPosts.data || []);
-            } catch (error: any) {
-                console.error('Dashboard intelligence sync failed:', error);
-                toast.error('Command Center Link Failure: ' + (error.message || 'Unknown error'));
-            } finally {
-                setLoading(false);
-            }
+        const init = async () => {
+            await Promise.resolve();
+            fetchStats();
         };
-
-        fetchStats();
-    }, []);
+        init();
+    }, [fetchStats]);
 
     const statCards = [
         { label: 'Inventory', value: stats.products, sub: `${stats.publishedProducts} live items`, icon: Package, color: 'from-slate-700 to-slate-800', link: '/admin/products' },

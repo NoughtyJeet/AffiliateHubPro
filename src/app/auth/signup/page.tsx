@@ -52,7 +52,7 @@ export default function SignupPage() {
                     <Check className="w-8 h-8 text-green-600" />
                 </div>
                 <h1 className="text-2xl font-bold text-gray-900 mb-2">Check Your Email!</h1>
-                <p className="text-gray-500 mb-6">We've sent a verification link to <strong>{email}</strong>. Please click it to activate your account.</p>
+                <p className="text-gray-500 mb-6">We&apos;ve sent a verification link to <strong>{email}</strong>. Please click it to activate your account.</p>
                 <Link href="/auth/login" className="block w-full py-3 bg-orange-500 hover:bg-orange-600 text-white font-semibold rounded-xl transition-colors text-center">Back to Sign In</Link>
             </div>
         </div>
@@ -127,7 +127,7 @@ export default function SignupPage() {
                                 placeholder="Repeat password"
                                 className={`w-full px-4 py-2.5 border rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-orange-300 ${confirmPassword && password !== confirmPassword ? 'border-red-300 focus:border-red-400' : 'border-gray-200 focus:border-orange-400'}`}
                             />
-                            {confirmPassword && password !== confirmPassword && <p className="text-red-500 text-xs mt-1">Passwords don't match</p>}
+                            {confirmPassword && password !== confirmPassword && <p className="text-red-500 text-xs mt-1">Passwords don&apos;t match</p>}
                         </div>
                         <button
                             type="submit"

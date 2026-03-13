@@ -90,7 +90,7 @@ export default function SitemapPage() {
 
                 <div className="mt-32 p-10 bg-gray-900 rounded-[2.5rem] flex flex-col md:flex-row items-center justify-between gap-8 md:gap-0">
                     <div>
-                        <h3 className="text-xl font-black text-white italic uppercase tracking-tight mb-2 leading-none">Can't find a specific node?</h3>
+                        <h3 className="text-xl font-black text-white italic uppercase tracking-tight mb-2 leading-none">Can&apos;t find a specific node?</h3>
                         <p className="text-gray-400 text-sm font-medium">Our intelligence directory is constantly updating.</p>
                     </div>
                     <Link

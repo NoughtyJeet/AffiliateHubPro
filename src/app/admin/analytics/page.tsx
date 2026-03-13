@@ -1,12 +1,13 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { 
     Activity, TrendingUp, MousePointer2, Target, 
     ArrowUpRight, ArrowDownRight, Package, FileText,
     Calendar, Filter, RefreshCw
 } from 'lucide-react';
 import { createClient } from '@/lib/supabase/client';
+import { AffiliateClick, AuditLog } from '@/types/database';
 import {
     AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer,
     BarChart, Bar, Cell, PieChart, Pie
@@ -14,7 +15,7 @@ import {
 
 export default function AnalyticsPage() {
     const [loading, setLoading] = useState(true);
-    const [clicks, setClicks] = useState<any[]>([]);
+    const [clicks, setClicks] = useState<AffiliateClick[]>([]);
     const [stats, setStats] = useState({
         totalClicks: 0,
         uniqueVisitors: 0,
@@ -23,11 +24,7 @@ export default function AnalyticsPage() {
     });
     const supabase = createClient();
 
-    useEffect(() => {
-        fetchAnalytics();
-    }, []);
-
-    const fetchAnalytics = async () => {
+    const fetchAnalytics = useCallback(async () => {
         setLoading(true);
         const { data, error } = await supabase
             .from('affiliate_clicks')
@@ -51,7 +48,15 @@ export default function AnalyticsPage() {
             });
         }
         setLoading(false);
-    };
+    }, [supabase]);
+
+    useEffect(() => {
+        const init = async () => {
+            await Promise.resolve();
+            fetchAnalytics();
+        };
+        init();
+    }, [fetchAnalytics]);
 
     // Chart Data Preparation
     const chartData = [

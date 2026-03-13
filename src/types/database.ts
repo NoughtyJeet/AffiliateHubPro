@@ -118,6 +118,27 @@ export type Submission = {
     created_at: string;
 };
 
+export type AffiliateClick = {
+    id: string;
+    product_id: string | null;
+    ip_address: string | null;
+    user_agent: string | null;
+    referrer: string | null;
+    created_at: string;
+};
+
+export type AuditLog = {
+    id: string;
+    action: string;
+    entity_type: string;
+    entity_id: string | null;
+    admin_id: string;
+    details: Record<string, unknown> | null;
+    severity: 'info' | 'warning' | 'critical';
+    ip_address: string | null;
+    created_at: string;
+};
+
 export type Database = {
     public: {
         Tables: {
@@ -128,6 +149,8 @@ export type Database = {
             ads: { Row: Ad };
             seo_settings: { Row: SEOSettings };
             submissions: { Row: Submission };
+            affiliate_clicks: { Row: AffiliateClick };
+            admin_audit_logs: { Row: AuditLog };
         };
     };
 };

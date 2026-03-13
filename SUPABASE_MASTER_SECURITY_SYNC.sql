@@ -20,7 +20,8 @@ BEGIN
 END;
 $$;
 
--- 2. SECURE AFFILIATE CLICKS
+-- 2. SECURE CORE TABLES
+ALTER TABLE public.profiles ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.affiliate_clicks ENABLE ROW LEVEL SECURITY;
 
 -- Drop permissive policies if they exist to ensure tightening

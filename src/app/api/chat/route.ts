@@ -48,7 +48,7 @@ export async function POST(req: Request) {
 
     // 2. Generate Content
     const chat = model.startChat({
-      history: messages.slice(0, -1).map((m: any) => ({
+      history: messages.slice(0, -1).map((m: { role: string; content: string }) => ({
         role: m.role === "user" ? "user" : "model",
         parts: [{ text: m.content }],
       })),
@@ -68,10 +68,11 @@ export async function POST(req: Request) {
     const text = response.text();
 
     return NextResponse.json({ content: text });
-  } catch (error: any) {
+  } catch (error: unknown) {
+    const message = error instanceof Error ? error.message : 'Unknown protocol error';
     console.error("Chat API Error:", error);
     return NextResponse.json(
-      { error: "Neural link failure. Please try again later.", details: error.message },
+      { error: "Neural link failure. Please try again later.", details: message },
       { status: 500 }
     );
   }

@@ -2,6 +2,8 @@ import { createClient } from '@/lib/supabase/server';
 import { ProductCard } from '@/components/ui/ProductCard';
 import { Heart, ShoppingBag, ArrowRight, User } from 'lucide-react';
 import Link from 'next/link';
+import { Database } from '@/types/database';
+type Product = Database['public']['Tables']['products']['Row'];
 import { redirect } from 'next/navigation';
 
 export const metadata = {
@@ -87,14 +89,14 @@ export default async function SavedPage() {
                             <Heart size={48} />
                         </div>
                         <h2 className="text-2xl font-black text-gray-900 tracking-tight uppercase mb-4 italic">Repository Empty</h2>
-                        <p className="text-gray-500 font-medium max-w-sm mx-auto mb-10">You haven't archived any products yet. Start exploring our directory to build your collection.</p>
+                        <p className="text-gray-500 font-medium max-w-sm mx-auto mb-10">You haven&apos;t archived any products yet. Start exploring our directory to build your collection.</p>
                         <Link href="/products" className="inline-flex items-center gap-3 bg-gray-900 hover:bg-black text-white px-10 py-5 rounded-2xl font-black text-xs uppercase tracking-[0.3em] transition-all shadow-xl shadow-gray-200">
                             Explore All Products <ShoppingBag size={16} />
                         </Link>
                     </div>
                 ) : (
                     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
-                        {savedProducts.map((product: any) => (
+                        {savedProducts.map((product: Product) => (
                             <ProductCard key={product.id} product={product} />
                         ))}
                     </div>

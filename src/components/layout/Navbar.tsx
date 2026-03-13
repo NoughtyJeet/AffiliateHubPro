@@ -39,8 +39,10 @@ export function Navbar() {
       });
   }, []);
   useEffect(() => {
-    setIsMenuOpen(false);
-  }, [pathname]);
+    if (isMenuOpen) {
+      Promise.resolve().then(() => setIsMenuOpen(false));
+    }
+  }, [pathname, isMenuOpen]);
   const productCats = categories.filter((c) => c.type === "product");
   const blogCats = categories.filter((c) => c.type === "blog");
   return (

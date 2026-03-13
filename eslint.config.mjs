@@ -12,6 +12,10 @@ const eslintConfig = defineConfig([
     "out/**",
     "build/**",
     "next-env.d.ts",
+    "_old_vite/**",
+    "debug_products.js",
+    "lint_results.txt",
+    "*.sql"
   ]),
 ]);
 

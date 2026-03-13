@@ -4,9 +4,22 @@ import { useState, useRef } from 'react';
 import { Link as LinkIcon, Upload, Package, Globe, Check, AlertCircle, Trash2, ArrowRight, FolderSync } from 'lucide-react';
 import toast from 'react-hot-toast';
 
+type ScrapedProduct = {
+    title?: string;
+    short_description?: string;
+    featured_image?: string;
+    price_range?: string;
+    brand?: string;
+    affiliate_link?: string;
+    category?: string;
+    description?: string;
+    link?: string;
+    [key: string]: string | undefined | null;
+};
+
 interface ProductImportProps {
-    onImportUrl: (data: any) => void;
-    onBulkImport: (data: any[]) => void;
+    onImportUrl: (data: ScrapedProduct) => void;
+    onBulkImport: (data: ScrapedProduct[]) => void;
 }
 
 export default function ProductImport({ onImportUrl, onBulkImport }: ProductImportProps) {
@@ -16,7 +29,7 @@ export default function ProductImport({ onImportUrl, onBulkImport }: ProductImpo
     const fileInputRef = useRef<HTMLInputElement>(null);
     
     // CSV State
-    const [csvData, setCsvData] = useState<any[]>([]);
+    const [csvData, setCsvData] = useState<ScrapedProduct[]>([]);
     const [fileName, setFileName] = useState('');
 
     const handleUrlImport = async () => {
@@ -42,8 +55,9 @@ export default function ProductImport({ onImportUrl, onBulkImport }: ProductImpo
             });
             toast.success('Product data captured!');
             setUrl('');
-        } catch (err: any) {
-            toast.error(err.message || 'Failed to auto-import. System blocked.');
+        } catch (err: unknown) {
+            const message = err instanceof Error ? err.message : 'Unknown protocol error';
+            toast.error(message || 'Failed to auto-import. System blocked.');
         } finally {
             setImporting(false);
         }
@@ -83,7 +97,7 @@ export default function ProductImport({ onImportUrl, onBulkImport }: ProductImpo
                     // but for a simple import it's usually enough. 
                     // Let's improve it slightly to handle basic quoted strings if needed
                     const values = row.split(',').map(v => v.trim().replace(/^["']|["']$/g, ''));
-                    const obj: any = {};
+                    const obj: ScrapedProduct = {};
                     headers.forEach((h, i) => {
                         obj[h] = values[i] || null;
                     });
